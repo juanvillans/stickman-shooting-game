@@ -6,14 +6,13 @@ import {dirname, join} from "path"
 import { fileURLToPath } from 'url'
 
 const app =  express()
-const _dirname = dirname(fileURLToPath(import.meta.url))
+const __dirname = dirname(fileURLToPath(import.meta.url))
 app.use(cors())
 const server = http.createServer(app)
-
+console.log(__dirname)
 const io = new Server( server, {
     cors: {
         origin: "http://localhost:3000",
-         
     }
 })
 
@@ -28,9 +27,9 @@ io.on("connection", (socket) => {
     })
 })
 
-app.use(express.static(join(_dirname, '.../client/build')))
+app.use(express.static(join(__dirname, '../client/build')))
 server.listen(process.env.PORT || 3001)
 // app.get('/', (req, res)=> {
 //     console.log('ayyy')
 //     res.send('<p>home page</p>')
-// }) 
+// })  
