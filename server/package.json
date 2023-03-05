@@ -8,7 +8,7 @@
     "test": "idkn",
     "start": "node index.js",
     "dev": "nodemon index.js",
-    "build": "npm run --prefix client build"
+    "build": "npm --prefix client install && npm run --prefix client build"
   },
   "repository": {
     "type": "git",
