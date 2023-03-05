@@ -71,14 +71,14 @@ export default function StickMan(props) {
     }
 
     if (props.stickManLifth === 0) {
-      console.log("se murió");
+      // console.log("se murió");
     } else {
       setTimeout(() => {
-        console.log("no se murio");
+        // console.log("no se murio");
         setImpactAnimations({});
       }, 110);
     }
-    console.log(props.stickManLifth);
+    // console.log(props.stickManLifth);
   }, [props.impactTotal]);
   return (
     <>

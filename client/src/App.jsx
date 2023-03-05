@@ -327,9 +327,10 @@ const alamielda = useRef(null)
       }
     });
   }
+  const bulletHitSound = new Audio(bulletHit);
+      const ouchSound = new Audio(ouch);
   function shooting2(bulletPath, bulletsDivLength, gunTop, shot) {
 
-    let impact = false;
 
 
     const shotGunSound = new Audio(shot);
@@ -355,47 +356,78 @@ const alamielda = useRef(null)
             <div className="w-ful absolute top-0 right-0">
               <div
                 className="z-0 bullet w-12 h-1 right-0 rounded-r-full absolute"
-                id={`bullet-ene${bulletsDivLength}`}
+                id={`bullet-ene${bulletsDivLength+1}`}
               ></div>
             </div>
           </div>,
         ];
       });
-      // let bullet = ''
-      setTimeout(() => {
-         const bullet = document.querySelector(`#bullet-ene${bulletsDivLength}`);
-        console.log(bullet)
-        animate({
-          duration: (window.innerWidth * 800) / 1360,
-          timing(timeFraction) {
-            return timeFraction;
-          },
-          draw(progress) {
-            bullet.style.right = progress * 120 + "vw";
-            if (impact == false) {
-              checkTouch(
-                {
-                  top: bullet.getBoundingClientRect().top,
-                  right: bullet.getBoundingClientRect().right,
-                  bottom: bullet.getBoundingClientRect().bottom,
-                  left: bullet.getBoundingClientRect().left,
-                },
-                {
-                  top: stickMan.current.getBoundingClientRect().top,
-                  right: stickMan.current.getBoundingClientRect().right,
-                  bottom: stickMan.current.getBoundingClientRect().bottom,
-                  left: stickMan.current.getBoundingClientRect().left,
-                },
-                bullet
-              );
-            }
-          },
-        });
-      }, 0.10);
+      
       
 
-      const bulletHitSound = new Audio(bulletHit);
-      const ouchSound = new Audio(ouch);
+      
+      
+      gunEl.style = "rotate: -20deg";
+      setTimeout(() => {
+        gunEl.style = "rotate: -4deg";
+      }, 100);
+    } else  {
+      emptyGunSound.play();
+    }
+    
+  }
+
+
+  useLayoutEffect(() => {
+   socket.on("receive_angle", (data) => {
+     setMousePosEn(data.mousePos)
+    setEnemyAngle(data.armsAngle)
+    setEnemyPos(data.stickManPosition)
+   }) 
+   socket.on("receive_shoot", (data) => {
+     shooting2(data.bulletPath, data.bulletsDivLength, data.gunYDistance, data.shot)
+    }) 
+    
+  }, [socket])
+  
+  useEffect(() => {
+    if( ownLifth === 0 )
+    socket.emit('')
+  
+  }, [ownLifth || enemyLifth])
+
+  useEffect(() => {
+    let impact = false;
+    if (bulletsDivEnemy.length > 0) {
+      let bullet = document.querySelector(`#bullet-ene${bulletsDivEnemy.length}`);
+    
+      animate({
+        duration: (window.innerWidth * 800) / 1360,
+        timing(timeFraction) {
+          return timeFraction;
+        },
+        draw(progress) {
+          bullet.style.right = progress * 120 + "vw";
+          if (impact == false) {
+            checkTouch(
+              {
+                top: bullet.getBoundingClientRect().top,
+                right: bullet.getBoundingClientRect().right,
+                bottom: bullet.getBoundingClientRect().bottom,
+                left: bullet.getBoundingClientRect().left,
+              },
+              {
+                top: stickMan.current.getBoundingClientRect().top,
+                right: stickMan.current.getBoundingClientRect().right,
+                bottom: stickMan.current.getBoundingClientRect().bottom,
+                left: stickMan.current.getBoundingClientRect().left,
+              },
+              bullet
+            );
+          }
+        },
+      });
+      
       function checkTouch(bullets, stickManPosition, bullet) {
         if (
           !(
@@ -433,35 +465,11 @@ const alamielda = useRef(null)
           }, 160);
         }
       }
-      gunEl.style = "rotate: -20deg";
-      setTimeout(() => {
-        gunEl.style = "rotate: -4deg";
-      }, 100);
-    } else  {
-      emptyGunSound.play();
+  
     }
     
-  }
+  }, [bulletsDivEnemy]);
 
-
-  useLayoutEffect(() => {
-   socket.on("receive_angle", (data) => {
-     setMousePosEn(data.mousePos)
-    setEnemyAngle(data.armsAngle)
-    setEnemyPos(data.stickManPosition)
-   }) 
-   socket.on("receive_shoot", (data) => {
-     shooting2(data.bulletPath, data.bulletsDivLength, data.gunYDistance, data.shot)
-    }) 
-    
-  }, [socket])
-  
-  useEffect(() => {
-    if( ownLifth === 0 )
-    socket.emit('')
-  
-  }, [ownLifth || enemyLifth])
-  
 
   useEffect(() => {
     setArmsAngle(

@@ -1,11 +1,13 @@
-const express =  require('express')
-const app = express()
-const http = require("http")
-const {Server}= require("socket.io")
-const cors = require("cors")
+import express from  'express'
+import http from "http"
+import {Server} from  "socket.io"
+import cors from "cors"
+import {dirname, join} from "path"
+import { fileURLToPath } from 'url'
 
+const app =  express()
+const _dirname = dirname(fileURLToPath(import.meta.url))
 app.use(cors())
-
 const server = http.createServer(app)
 
 const io = new Server( server, {
@@ -26,7 +28,8 @@ io.on("connection", (socket) => {
     })
 })
 
-server.listen(3001)
+app.use(express.static(join(_dirname, '.../client/build')))
+server.listen(process.env.PORT || 3001)
 // app.get('/', (req, res)=> {
 //     console.log('ayyy')
 //     res.send('<p>home page</p>')

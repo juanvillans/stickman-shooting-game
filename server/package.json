@@ -3,9 +3,12 @@
   "version": "1.0.0",
   "description": "shooting game",
   "main": "index.js",
+  "type":"module",
   "scripts": {
     "test": "idkn",
-    "start": "nodemon index.js"
+    "start": "node index.js",
+    "dev": "nodemon index.js",
+    "build": "npm run --prefix client build"
   },
   "repository": {
     "type": "git",
