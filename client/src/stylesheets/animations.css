@@ -1,0 +1,21 @@
+.bullet {
+  animation: moveBall .6s ease-out forwards;
+  background: rgb(255,255,255);
+  
+  background: linear-gradient(90deg, rgba(255,255,255,1) 0%, rgb(136, 86, 0) 80%);
+}
+.bullet.red{
+  box-shadow: 20px 0px 3px red;
+  background: linear-gradient(90deg, rgba(255, 0, 0, 0.089) 0%, red 90%);
+  /* background: linear-gradient(90deg, rgb(255, 0, 0) 0%, rgb(136, 86, 0) 80%); */
+
+
+}
+/* @keyframes moveBall {
+  from {
+    left: 0;
+  }
+  to {
+    left: calc(100vw + 50vh);
+  }
+} */

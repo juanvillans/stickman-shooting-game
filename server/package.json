@@ -1,0 +1,27 @@
+{
+  "name": "server",
+  "version": "1.0.0",
+  "description": "shooting game",
+  "main": "index.js",
+  "scripts": {
+    "test": "idkn",
+    "start": "nodemon index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/juanvillans/stickman-shooting-game.git"
+  },
+  "keywords": [
+    "123"
+  ],
+  "author": "Juan Villasmil",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/juanvillans/stickman-shooting-game/issues"
+  },
+  "homepage": "https://github.com/juanvillans/stickman-shooting-game#readme",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "socket.io": "^4.6.1"
+  }
+}
