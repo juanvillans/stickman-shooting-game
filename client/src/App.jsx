@@ -9,7 +9,7 @@ import bulletHit from "./audio/bullet-hit.mp3";
 import ouch from "./audio/ouch.mp3";
 
 import io from "socket.io-client"
-const socket = io.connect("https://stickman-shooting-game.adaptable.app:8080")
+const socket = io.connect("https://stickman-shooting-game.adaptable.app")
 
 function App() {
   const [armsAngle, setArmsAngle] = useState(0);
