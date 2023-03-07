@@ -12,7 +12,7 @@ const server = http.createServer(app)
 console.log(__dirname)
 const io = new Server( server, {
     cors: {
-        origin: "https://stickman-shooting-game.adaptable.app/",
+        origin: "https://stickman-shooting-game.adaptable.app:8080",
     }
 })
 
