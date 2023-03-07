@@ -29,7 +29,7 @@ io.on("connection", (socket) => {
 
 app.use(express.static(join(__dirname, '../client/build')))
 server.listen(process.env.PORT || 3001)
-// app.get('/', (req, res)=> {
-//     console.log('ayyy')
-//     res.send('<p>home page</p>')
-// })  
+app.get('/', (req, res)=> {
+    console.log('ayyy')
+    res.send('<p>home page</p>')
+})  

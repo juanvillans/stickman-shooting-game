@@ -479,6 +479,11 @@ const alamielda = useRef(null)
       socket.emit("send_angle", {armsAngle, stickManPosition, mousePos})
   }, [mousePos, stickManPosition.top]);
 
+
+  useEffect(() => {
+   
+  }, [ownLifth || enemyLifth]);
+
   const x1 = 20;
   const y1 = stickManPosition;
   const x2 = mousePos.x;
