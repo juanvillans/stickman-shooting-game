@@ -13,6 +13,7 @@ console.log(__dirname)
 const io = new Server( server, {
     cors: {
         origin: "https://stickman-shooting-game.adaptable.app",
+        methods: ["GET","POST"]
     }
 })
 

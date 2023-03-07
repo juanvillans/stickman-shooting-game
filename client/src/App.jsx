@@ -327,8 +327,7 @@ const alamielda = useRef(null)
       }
     });
   }
-  const bulletHitSound = new Audio(bulletHit);
-      const ouchSound = new Audio(ouch);
+ 
   function shooting2(bulletPath, bulletsDivLength, gunTop, shot) {
 
 
@@ -397,6 +396,8 @@ const alamielda = useRef(null)
   }, [ownLifth || enemyLifth])
 
   useEffect(() => {
+    const bulletHitSound = new Audio(bulletHit);
+    const ouchSound = new Audio(ouch);
     let impact = false;
     if (bulletsDivEnemy.length > 0) {
       let bullet = document.querySelector(`#bullet-ene${bulletsDivEnemy.length}`);
