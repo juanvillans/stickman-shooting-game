@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect, useLayoutEffect } from "react";
 import StickMan from "./components/StickMan";
+import GameOver from "./components/GameOver";
 import "./stylesheets/animations.css";
 import grassImg from "./img/grass.jpg";
 import shot from "./audio/shot.mp3";
@@ -7,7 +8,6 @@ import emptyGunShot from "./audio/empty-gun-shot.mp3";
 import reload from "./audio/reload.mp3";
 import bulletHit from "./audio/bullet-hit.mp3";
 import ouch from "./audio/ouch.mp3";
-import GameOver from "./components/GameOver";
 import io from "socket.io-client"
 const socket = io.connect("https://stickman-shooting-game.adaptable.app")
 
@@ -395,15 +395,15 @@ function App() {
     }) 
     socket.on("receive_lift", (data) => {
       setEnemyLifth(data)
+      if (enemyLifth === 0){
+        setGameOver(true)
+      }
      }) 
     
   }, [socket])
   
   useEffect(() => {
     socket.emit('send_life', ownLifth)
-    if( ownLifth === 0 ) {
-      console.log('muerto')
-    }
   
   }, [ownLifth])
 
@@ -511,7 +511,7 @@ function App() {
       {bulletsDiv}  
       {bulletsDivEnemy}
 
-      <GameOver />
+      {gameOver && <GameOver />}
 
       <StickMan
         key={1}
