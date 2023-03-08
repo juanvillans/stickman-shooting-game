@@ -7,7 +7,7 @@ import emptyGunShot from "./audio/empty-gun-shot.mp3";
 import reload from "./audio/reload.mp3";
 import bulletHit from "./audio/bullet-hit.mp3";
 import ouch from "./audio/ouch.mp3";
-
+import GameOver from "./components/GameOver";
 import io from "socket.io-client"
 const socket = io.connect("https://stickman-shooting-game.adaptable.app")
 
@@ -22,6 +22,7 @@ function App() {
     x: null,
     y: null,
   });
+  const [gameOver, setGameOver] = useState(false)
   const [mousePosEn, setMousePosEn] = useState({
     x:null,
     y:null,
@@ -51,7 +52,6 @@ function App() {
   const chargerCapacity = 30;
   const enemy = useRef("");
   const stickMan = useRef("");
-const alamielda = useRef(null)
   React.useEffect(() => {
     const reloadSound = new Audio(reload);
 
@@ -74,6 +74,7 @@ const alamielda = useRef(null)
     }
 
     function keyboardController(keys, repeat) {
+     
       let timers = {};
 
       document.onkeydown = function (event) {
@@ -109,64 +110,67 @@ const alamielda = useRef(null)
       };
     }
 
-    keyboardController(
-      {
-        s: function () {
-          setStickManPosition((prev) => {
-            return {
-              top: prev.top < 580 ? prev.top + 50 : prev.top,
-              right: stickMan.current.getBoundingClientRect().right,
-              bottom: stickMan.current.getBoundingClientRect().bottom,
-              left: stickMan.current.getBoundingClientRect().left,
-            };
-          });
-        },
-        w: function () {
-          setStickManPosition((prev) => {
-            return {
-              top: prev.top > 60 ? prev.top - 50 : prev.top,
-              right: stickMan.current.getBoundingClientRect().right,
-              bottom: stickMan.current.getBoundingClientRect().bottom,
-              left: stickMan.current.getBoundingClientRect().left,
-            };
-          });
-        },
-        // k: function () {
-        //   setEnemyPos((prev) => {
-        //     return {
-        //       top: prev.top + 50,
-        //       right: enemy.current.getBoundingClientRect().right,
-        //       bottom: enemy.current.getBoundingClientRect().bottom,
-        //       left: enemy.current.getBoundingClientRect().left,
-        //     };
-        //   });
-        // },
-        // i: function () {
-        //   setEnemyPos((prev) => {
-        //     return {
-        //       top: prev.top - 50,
-        //       right: enemy.current.getBoundingClientRect().right,
-        //       bottom: enemy.current.getBoundingClientRect().bottom,
-        //       left: enemy.current.getBoundingClientRect().left,
-        //     };
-        //   });
-        // },
-      },
-      50
-    );
+    if (gameOver === false ) {
 
-    window.addEventListener("keydown", (e) => {
-      const key = e.key.toLowerCase();
-      if (key === "r") {
-        reloadSound.play();
-        setIsReloading(true);
-        setTimeout(() => {
-          setIsReloading(false);
-          setBulletsAvailable((prev) => prev + (chargerCapacity - prev));
-        }, 2300);
-      }
-    });
-    window.addEventListener("mousemove", updateMousePos);
+      keyboardController(
+        {
+          s: function () {
+            setStickManPosition((prev) => {
+              return {
+                top: prev.top < 580 ? prev.top + 50 : prev.top,
+                right: stickMan.current.getBoundingClientRect().right,
+                bottom: stickMan.current.getBoundingClientRect().bottom,
+                left: stickMan.current.getBoundingClientRect().left,
+              };
+            });
+          },
+          w: function () {
+            setStickManPosition((prev) => {
+              return {
+                top: prev.top > 60 ? prev.top - 50 : prev.top,
+                right: stickMan.current.getBoundingClientRect().right,
+                bottom: stickMan.current.getBoundingClientRect().bottom,
+                left: stickMan.current.getBoundingClientRect().left,
+              };
+            });
+          },
+          // k: function () {
+          //   setEnemyPos((prev) => {
+          //     return {
+          //       top: prev.top + 50,
+          //       right: enemy.current.getBoundingClientRect().right,
+          //       bottom: enemy.current.getBoundingClientRect().bottom,
+          //       left: enemy.current.getBoundingClientRect().left,
+          //     };
+          //   });
+          // },
+          // i: function () {
+          //   setEnemyPos((prev) => {
+          //     return {
+          //       top: prev.top - 50,
+          //       right: enemy.current.getBoundingClientRect().right,
+          //       bottom: enemy.current.getBoundingClientRect().bottom,
+          //       left: enemy.current.getBoundingClientRect().left,
+          //     };
+          //   });
+          // },
+        },
+        50
+      );
+  
+      window.addEventListener("keydown", (e) => {
+        const key = e.key.toLowerCase();
+        if (key === "r") {
+          reloadSound.play();
+          setIsReloading(true);
+          setTimeout(() => {
+            setIsReloading(false);
+            setBulletsAvailable((prev) => prev + (chargerCapacity - prev));
+          }, 2300);
+        }
+      });
+      window.addEventListener("mousemove", updateMousePos);
+    }
     // console.log(enemy.current.getBoundingClientRect().top, enemy.current.getBoundingClientRect().right, enemy.current.getBoundingClientRect().bottom, enemy.current.getBoundingClientRect().left)
     return () => {
       window.removeEventListener("mousemove", updateMousePos);
@@ -177,138 +181,141 @@ const alamielda = useRef(null)
 
   function shooting() {
     
-    const stickDiv = document.querySelector(".stickMan");
-    const distanceY =
-    window.pageYOffset + stickMan.current.getBoundingClientRect().top + 90;
-    const bulletPath =
-    Math.atan2(mousePos.y - distanceY  , mousePos.x - 20) * (180 / Math.PI);
-    let impact = false;
-    
-    function animate({ timing, draw, duration }) {
-      let start = performance.now();
+    if (gameOver === false) {
 
-      requestAnimationFrame(function animate(time) {
-        let timeFraction = (time - start) / duration;
-        if (timeFraction > 1) timeFraction = 1;
-
-        let progress = timing(timeFraction);
-        draw(progress);
-        if (timeFraction < 1) {
-          requestAnimationFrame(animate);
-        }
-      });
-    }
-
-    const shotGunSound = new Audio(shot);
-    const emptyGunSound = new Audio(emptyGunShot);
-    const gunEl = document.querySelector(".gun");
-    const gunXDistance =
-      window.pageXOffset + gunEl.getBoundingClientRect().left + 23;
-    const gunYDistance = window.pageYOffset + gunEl.getBoundingClientRect().top;
-
-    if (bulletsAvailable > 0 && isReloading === false) {
-
-      setBulletsAvailable((prev) => --prev);
-
-      shotGunSound.play();
-      setBulletsDiv((prevDivs) => {
-        return [
-          ...prevDivs,
-          <div
-            className={` h-1 absolute  z-50  left-11 origin-left bullet-parent`}
-            style={{
-              transform: `rotate(${bulletPath}deg)`,
-              top: `${gunYDistance + 4}px `,
-              left: `${gunXDistance}px`,
-            }}
-          >
-            <div
-              className="z-0 bullet w-12 h-1 rounded-r-full relative"
-              id={`bullet-${bulletsDiv.length}`}
-            ></div>
-          </div>,
-        ];
-      });
-
-      socket.emit("send_shoot", { bulletPath, bulletsDivLength: bulletsDiv.length, gunYDistance, shot: true})
-
-
-      animate({
-        duration: (window.innerWidth * 800) / 1360,
-        timing(timeFraction) {
-          return timeFraction;
-        },
-        draw(progress) {
-          const bullet = document.querySelector(`#bullet-${bulletsDiv.length}`);
-          bullet.style.left = progress * 120 + "vw";
-          if (impact == false) {
-            checkTouch(
-              {
-                top: bullet.getBoundingClientRect().top,
-                right: bullet.getBoundingClientRect().right,
-                bottom: bullet.getBoundingClientRect().bottom,
-                left: bullet.getBoundingClientRect().left,
-              },
-              {
-                top: enemy.current.getBoundingClientRect().top,
-                right: enemy.current.getBoundingClientRect().right,
-                bottom: enemy.current.getBoundingClientRect().bottom,
-                left: enemy.current.getBoundingClientRect().left,
-              },
-              bullet
-            );
+      const stickDiv = document.querySelector(".stickMan");
+      const distanceY =
+      window.pageYOffset + stickMan.current.getBoundingClientRect().top + 90;
+      const bulletPath =
+      Math.atan2(mousePos.y - distanceY  , mousePos.x - 20) * (180 / Math.PI);
+      let impact = false;
+      
+      function animate({ timing, draw, duration }) {
+        let start = performance.now();
+  
+        requestAnimationFrame(function animate(time) {
+          let timeFraction = (time - start) / duration;
+          if (timeFraction > 1) timeFraction = 1;
+  
+          let progress = timing(timeFraction);
+          draw(progress);
+          if (timeFraction < 1) {
+            requestAnimationFrame(animate);
           }
-        },
-      });
-
-      const bulletHitSound = new Audio(bulletHit);
-      const ouchSound = new Audio(ouch);
-      function checkTouch(bullets, enemyPos, bullet) {
-        if (
-          !(
-            bullets.top > enemyPos.bottom - 11 ||
-            bullets.right < enemyPos.left ||
-            bullets.bottom < enemyPos.top ||
-            bullets.left > enemyPos.right
-          )
-        ) {
-          if (bullets.bottom < enemyPos.top + 22) {
-            console.log("head");
-            // setEnemyLifth((prev) => (prev - 60 < 0 ? 0 : prev - 60));
-            setEnemyImpact((prev) => ({
-              total: ++prev.total,
-              location: "head",
-            }));
-          } else if (bullets.top > enemyPos.top + 40) {
-            console.log("legs");
-            // setEnemyLifth((prev) => (prev - 10 < 0 ? 0 : prev - 10));
-            setEnemyImpact((prev) => ({
-              total: ++prev.total,
-              location: "legs",
-            }));
-          } else {
-            console.log("torso");
-            // setEnemyLifth((prev) => (prev - 20 < 0 ? 0 : prev - 20));
-            setEnemyImpact((prev) => ({
-              total: ++prev.total,
-              location: "torso",
-            }));
-          }
-          impact = true;
-          bulletHitSound.play();
-          bullet.classList.add("red");
-          
-          setTimeout(() => {
-            ouchSound.play();
-          }, 160);
-        }
+        });
       }
-      gunEl.style = "rotate: -20deg";
-      setTimeout(() => {
-        gunEl.style = "rotate: -4deg";
-      }, 100);
-    } else if (bulletsAvailable === 0 && isReloading === false) {
-      emptyGunSound.play();
+  
+      const shotGunSound = new Audio(shot);
+      const emptyGunSound = new Audio(emptyGunShot);
+      const gunEl = document.querySelector(".gun");
+      const gunXDistance =
+        window.pageXOffset + gunEl.getBoundingClientRect().left + 23;
+      const gunYDistance = window.pageYOffset + gunEl.getBoundingClientRect().top;
+  
+      if (bulletsAvailable > 0 && isReloading === false) {
+  
+        setBulletsAvailable((prev) => --prev);
+  
+        shotGunSound.play();
+        setBulletsDiv((prevDivs) => {
+          return [
+            ...prevDivs,
+            <div
+              className={` h-1 absolute  z-50  left-11 origin-left bullet-parent`}
+              style={{
+                transform: `rotate(${bulletPath}deg)`,
+                top: `${gunYDistance + 4}px `,
+                left: `${gunXDistance}px`,
+              }}
+            >
+              <div
+                className="z-0 bullet w-12 h-1 rounded-r-full relative"
+                id={`bullet-${bulletsDiv.length}`}
+              ></div>
+            </div>,
+          ];
+        });
+  
+        socket.emit("send_shoot", { bulletPath, bulletsDivLength: bulletsDiv.length, gunYDistance, shot: true})
+  
+  
+        animate({
+          duration: (window.innerWidth * 800) / 1360,
+          timing(timeFraction) {
+            return timeFraction;
+          },
+          draw(progress) {
+            const bullet = document.querySelector(`#bullet-${bulletsDiv.length}`);
+            bullet.style.left = progress * 120 + "vw";
+            if (impact == false) {
+              checkTouch(
+                {
+                  top: bullet.getBoundingClientRect().top,
+                  right: bullet.getBoundingClientRect().right,
+                  bottom: bullet.getBoundingClientRect().bottom,
+                  left: bullet.getBoundingClientRect().left,
+                },
+                {
+                  top: enemy.current.getBoundingClientRect().top,
+                  right: enemy.current.getBoundingClientRect().right,
+                  bottom: enemy.current.getBoundingClientRect().bottom,
+                  left: enemy.current.getBoundingClientRect().left,
+                },
+                bullet
+              );
+            }
+          },
+        });
+  
+        const bulletHitSound = new Audio(bulletHit);
+        const ouchSound = new Audio(ouch);
+        function checkTouch(bullets, enemyPos, bullet) {
+          if (
+            !(
+              bullets.top > enemyPos.bottom - 11 ||
+              bullets.right < enemyPos.left ||
+              bullets.bottom < enemyPos.top ||
+              bullets.left > enemyPos.right
+            )
+          ) {
+            if (bullets.bottom < enemyPos.top + 22) {
+              console.log("head");
+              // setEnemyLifth((prev) => (prev - 60 < 0 ? 0 : prev - 60));
+              setEnemyImpact((prev) => ({
+                total: ++prev.total,
+                location: "head",
+              }));
+            } else if (bullets.top > enemyPos.top + 40) {
+              console.log("legs");
+              // setEnemyLifth((prev) => (prev - 10 < 0 ? 0 : prev - 10));
+              setEnemyImpact((prev) => ({
+                total: ++prev.total,
+                location: "legs",
+              }));
+            } else {
+              console.log("torso");
+              // setEnemyLifth((prev) => (prev - 20 < 0 ? 0 : prev - 20));
+              setEnemyImpact((prev) => ({
+                total: ++prev.total,
+                location: "torso",
+              }));
+            }
+            impact = true;
+            bulletHitSound.play();
+            bullet.classList.add("red");
+            
+            setTimeout(() => {
+              ouchSound.play();
+            }, 160);
+          }
+        }
+        gunEl.style = "rotate: -20deg";
+        setTimeout(() => {
+          gunEl.style = "rotate: -4deg";
+        }, 100);
+      } else if (bulletsAvailable === 0 && isReloading === false) {
+        emptyGunSound.play();
+      }
     }
     
   }
@@ -386,17 +393,17 @@ const alamielda = useRef(null)
    socket.on("receive_shoot", (data) => {
      shooting2(data.bulletPath, data.bulletsDivLength, data.gunYDistance, data.shot)
     }) 
-    socket.on("receive_shoot", (data) => {
+    socket.on("receive_lift", (data) => {
       setEnemyLifth(data)
      }) 
     
   }, [socket])
   
   useEffect(() => {
+    socket.emit('send_life', ownLifth)
     if( ownLifth === 0 ) {
       console.log('muerto')
     }
-    socket.emit('send_life', ownLifth)
   
   }, [ownLifth])
 
@@ -498,11 +505,13 @@ const alamielda = useRef(null)
       ref={targetRef}
       className={`overflow-hidden w-full h-screen relative  arena`}
     >
-      {bulletsDiv}
-      <div ref={alamielda}>
-        {bulletsDivEnemy}
 
-      </div>
+
+
+      {bulletsDiv}  
+      {bulletsDivEnemy}
+
+      <GameOver />
 
       <StickMan
         key={1}
@@ -531,6 +540,8 @@ const alamielda = useRef(null)
         impactLocation={enemyImpact.location}
         stickManLifth={enemyLifth}
       />
+
+
       <div className="vidas w-full py-2 px-10 flex justify-between">
         <div className="me">
         <div className="w-32 h-4 border-black border-2">
