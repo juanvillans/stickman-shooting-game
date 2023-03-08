@@ -274,21 +274,21 @@ const alamielda = useRef(null)
         ) {
           if (bullets.bottom < enemyPos.top + 22) {
             console.log("head");
+            // setEnemyLifth((prev) => (prev - 60 < 0 ? 0 : prev - 60));
             setEnemyImpact((prev) => ({
               total: ++prev.total,
               location: "head",
             }));
-            setEnemyLifth((prev) => (prev - 60 < 0 ? 0 : prev - 60));
           } else if (bullets.top > enemyPos.top + 40) {
             console.log("legs");
-            setEnemyLifth((prev) => (prev - 10 < 0 ? 0 : prev - 10));
+            // setEnemyLifth((prev) => (prev - 10 < 0 ? 0 : prev - 10));
             setEnemyImpact((prev) => ({
               total: ++prev.total,
               location: "legs",
             }));
           } else {
             console.log("torso");
-            setEnemyLifth((prev) => (prev - 20 < 0 ? 0 : prev - 20));
+            // setEnemyLifth((prev) => (prev - 20 < 0 ? 0 : prev - 20));
             setEnemyImpact((prev) => ({
               total: ++prev.total,
               location: "torso",
@@ -386,14 +386,19 @@ const alamielda = useRef(null)
    socket.on("receive_shoot", (data) => {
      shooting2(data.bulletPath, data.bulletsDivLength, data.gunYDistance, data.shot)
     }) 
+    socket.on("receive_shoot", (data) => {
+      setEnemyLifth(data)
+     }) 
     
   }, [socket])
   
   useEffect(() => {
-    if( ownLifth === 0 )
-    socket.emit('')
+    if( ownLifth === 0 ) {
+      console.log('muerto')
+    }
+    socket.emit('send_life', ownLifth)
   
-  }, [ownLifth || enemyLifth])
+  }, [ownLifth])
 
   useEffect(() => {
     const bulletHitSound = new Audio(bulletHit);
@@ -481,9 +486,6 @@ const alamielda = useRef(null)
   }, [mousePos, stickManPosition.top]);
 
 
-  useEffect(() => {
-   
-  }, [ownLifth || enemyLifth]);
 
   const x1 = 20;
   const y1 = stickManPosition;

@@ -26,6 +26,9 @@ io.on("connection", (socket) => {
     socket.on("send_shoot", (data) => {
         socket.broadcast.emit("receive_shoot", data)
     })
+    socket.on("send_lifth", (data) => {
+        socket.broadcast.emit("receive_lifth", data)
+    })
 })
 
 app.use(express.static(join(__dirname, '../client/build')))
